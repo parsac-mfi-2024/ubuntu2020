@@ -1,0 +1,21 @@
+---
+- hosts: all 
+  vars: 
+    RETRIES: 3
+    UNLOCK_AFTER: 60
+  become: true
+  tasks: 
+
+    - name: "Ensure Account is locked after 3 consecutive failed login attempts (Ubuntu 22.04)"
+      lineinfile:
+          path: /etc/pam.d/common-auth
+          insertbefore: BOF
+          line: "auth    required    pam_faillock.so preauth silent deny={{ RETRIES }} unlock_time={{ UNLOCK_AFTER }} even_deny_root root_unlock_time={{ UNLOCK_AFTER }}"
+          state: present
+
+    - name: "Ensure Account is locked after auth failure (Ubuntu 22.04)"
+      lineinfile:
+          path: /etc/pam.d/common-auth
+          insertafter: "^auth.*pam_faillock.so.*preauth"
+          line: "auth    [default=die]    pam_faillock.so authfail deny={{ RETRIES }} unlock_time={{ UNLOCK_AFTER }} even_deny_root root_unlock_time={{ UNLOCK_AFTER }}"
+          state: present
