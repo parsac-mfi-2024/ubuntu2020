@@ -1,24 +1,10 @@
-all:
+all: 
   children:
-    ec2_instances:
+    ubuntu:
       hosts:
-        ubuntu-instance-1:
-          ansible_host: 3.92.242.142
-          ansible_user: ubuntu
-          ansible_ssh_private_key_file: ~/Downloads/general-aws.pem
-          ansible_become_pass: ubuntu 
-        # Add more instances here if needed
-      vars:
-        ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-
-    #ec2_instances:
-    #  hosts:
-    #    ubuntu-instance-1:
-    #      ansible_host: 3.91.94.100
-    #      ansible_user: root
-    #      asnible_password: testing
-    #      #ansible_ssh_private_key_file: ~/Downloads/general-aws.pem
-    #      ansible_become_pass: testing
-    #    # Add more instances here if needed
-    #  vars:
-    #    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+        ubuntu1:
+          ansible_host:
+          ansible_user: ansible
+          ansible_password: ansible
+          ansible_become: true
+          ansible_become_password: ansible
