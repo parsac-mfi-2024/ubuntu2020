@@ -1,0 +1,40 @@
+---
+- hosts: ubuntu1
+  vars:  
+    lock_user_list: | 
+      - user1
+      - user2
+    pass_exp_excluded_users: 
+      - root
+    changed_all_user: true
+  gather_facts: true
+  become: true
+  tasks: 
+
+    - name: "Discover interactive users"
+      ansible.builtin.shell: "getent passwd | awk -F: '($3 >= 1000){print $1}'"
+      register: users
+
+    - name: print the interactive users
+      ansible.builtin.debug:
+        var: users.stdout_lines
+
+    - name: Unset password expiration for root user
+      ansible.builtin.shell: "chage --maxdays 99999 {{ item }}"
+      changed_when: false
+      loop: "{{ pass_exp_excluded_users }}"
+
+    - name: "Force user to change password first login"
+      ansible.builtin.shell: "chage -d0 {{ item }}"
+      loop: "{{ users.stdout_lines }}"
+      when:
+        - item != "ansible"
+        - item != "nobody"
+        - item != "user1"
+        - changed_all_user|bool  == true|bool
+
+    - block:
+      - name: "Multi User | Force user to change password first login"
+        ansible.builtin.shell: "chage -d0 {{ item }}"
+        loop: "{{ lock_user_list.split('\n') | select('match', '^.+$') | list }}"
+        when: lock_user_list != ''
