@@ -2,8 +2,8 @@
 - hosts: ubuntu1
   vars:  
     lock_user_list: | 
-      - user1
-      - user2
+      user1
+      user2
     pass_exp_excluded_users: 
       - root
     changed_all_user: true
