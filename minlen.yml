@@ -1,0 +1,19 @@
+---
+- name: "Ensure lipam-pwquality is installed"
+  apt:
+    name: libpam-pwquality
+    state: present
+  when: "'lipam-pwquality' not in ansible_facts.packages"
+
+- name: "Ensure password Minimum length is set to {{ PASSLENGTH }}" 
+  lineinfile:
+    path: /etc/security/pwquality.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^minlen', line: 'minlen = {{ ubuntu22_pam.minlen }}' }
+    - { regexp: '^minclass', line: 'minclass = {{ ubuntu22_pam.minclass }}' }
+    - { regexp: '^lcredit', line: 'lcredit = 0'}
+    - { regexp: '^ucredit', line: 'ucredit = 0'}
+    - { regexp: '^dcredit', line: 'dcredit = 0'}
+    - { regexp: '^ocredit', line: 'ocredit = 0'}
